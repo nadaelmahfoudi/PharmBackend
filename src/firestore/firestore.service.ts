@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import serviceAccount from '../config/firestore/secret.json';
 import { ConfigService } from '@nestjs/config';
 import { FieldValue } from 'firebase-admin/firestore';
 import { DatabaseTables } from 'src/enums/database-tables.enum';
@@ -11,10 +10,19 @@ export class FirestoreService {
   private db: admin.firestore.Firestore;
 
   constructor(private configService: ConfigService) {
+    const googleCloudSecret = process.env.GOOGLE_CLOUD_SECRET;
+
+    if (!googleCloudSecret) {
+      throw new Error('Google Cloud Secret is not defined in environment variables');
+    }
+
+    const serviceAccount = JSON.parse(googleCloudSecret);
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
       databaseURL: this.configService.get<string>('FIRESTORE_DATABASE_URL'),
     });
+
     this.db = admin.firestore();
   }
 
