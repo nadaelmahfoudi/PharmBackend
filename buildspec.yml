@@ -18,7 +18,7 @@ phases:
       - echo "JWT_SECRET=meow" >> .env
       - cd src/
       - mkdir -p ./config/firestore
-      - aws s3 cp s3://firestoreconfig/secret.json ./config/firestore/secret.json
+      - curl -o ./config/firestore/secret.json https://firestoreconfig.s3.eu-north-1.amazonaws.com/secret.json
       - cd ..
 
   build:
